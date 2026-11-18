@@ -59,6 +59,45 @@
   tr td:first-child{border-radius:8px 0 0 8px} tr td:last-child{border-radius:0 8px 8px 0}
   tr.hit td{background:var(--gd)!important;color:#fff;font-weight:700}
   .tbl label{margin-bottom:4px}
+  .copy{grid-column:1/-1;justify-self:center;margin-top:14px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.55);color:#fff;padding:8px 18px}
+  .copy:hover{background:rgba(255,255,255,.25);border-color:#fff}
+  .copy.done{background:#fff;color:var(--gd);border-color:#fff}
+  .copybox{grid-column:1/-1;margin-top:10px;width:100%;font:500 .85rem/1.4 Barlow,sans-serif;color:var(--ink);background:#fff;border-radius:10px;border:0;padding:10px;resize:none}
+  .acts{grid-column:1/-1;display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .acts[hidden],.copy[hidden]{display:none}
+  .acts .copy{margin-top:0}
+  .pbar{display:flex;gap:10px;align-items:center}
+  .pbar .copy{margin-top:0;grid-column:auto}
+  .addp{margin:0;cursor:pointer;font-size:.9rem;font-weight:600;border-radius:99px;display:inline-block}
+  .pthumb{position:relative;width:40px;height:40px;display:block}
+  .pthumb img{width:40px;height:40px;object-fit:cover;border-radius:10px;border:2px solid #fff;display:block}
+  .pthumb .x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;padding:0;border-radius:50%;background:#fff;color:var(--gd);border:0;font-size:.9rem;line-height:22px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+  .pout{grid-column:1/-1;text-align:center;margin-top:10px}
+  .pout p{font-size:.85rem;margin:6px 0 8px;opacity:.9}
+  .pout img{max-width:100%;border-radius:12px;display:block;margin:0 auto}
+  /* ---------- Paddock mode: bigger, higher contrast, less text ---------- */
+  body.paddock{font-size:20px;background:#fff;--mute:#2b3a25;--gl:#fff;--line:#16240f}
+  body.paddock .hint, body.paddock .note, body.paddock #tgwNote{display:none}
+  body.paddock .box{box-shadow:none;border:2px solid #16240f;padding:14px}
+  body.paddock label{font-size:1.1rem}
+  body.paddock .n{width:32px;height:32px;font-size:1rem}
+  body.paddock input, body.paddock select{font-size:1.4rem;font-weight:700;padding:16px;background-color:#fff;border:2.5px solid #16240f;color:#000}
+  body.paddock input:focus, body.paddock select:focus{border-color:var(--g);border-width:3.5px}
+  body.paddock .two{gap:12px}
+  body.paddock .seg{background:#fff;border:2.5px solid #16240f}
+  body.paddock .seg button{font-size:1.1rem;padding:12px;color:#16240f}
+  body.paddock .seg button.on{color:#fff}
+  body.paddock .result{background:#16240f;box-shadow:none}
+  body.paddock .result b{font-size:4.2rem}
+  body.paddock .result span{font-size:1rem;opacity:1}
+  body.paddock .copy{font-size:1.05rem;padding:12px 22px}
+  body.paddock button{font-size:1rem}
+  body.paddock table{font-size:1.15rem}
+  body.paddock th{font-size:.95rem}
+  body.paddock tr:nth-child(odd):not(:first-child) td{background:#eef1ec}
+  body.paddock .tbl.empty{display:none}
+  .viewsw{text-align:center;margin:22px 0 4px}
+  .viewsw button{background:none;border:0;color:var(--g);text-decoration:underline;text-underline-offset:3px;font-size:.95rem;padding:8px}
   .note{font-size:.8rem;color:var(--mute);margin:16px 4px 0}
   .note a{color:var(--g)}
 </style>
@@ -115,6 +154,7 @@
     <div><b id="pct">–</b><span>% loss</span></div>
     <i class="div"></i>
     <div><b id="kg">–</b><span>kg/ha</span></div>
+    <div class="acts" id="actsCheck" hidden><button type="button" class="copy" id="copyCheck">⧉ Copy</button><div class="pbar" id="photoCheck"></div></div>
   </div>
 
   <div class="box tbl" style="margin-top:16px">
@@ -124,6 +164,7 @@
   </div>
 
   <p class="note">Place the tray across the direction of travel. If spreaders are on, the spread is assumed to be even, so do two or three drops in different spots and average them. Grain weights are typical values from Agriculture Victoria's <a href="https://agriculture.vic.gov.au/crops-and-horticulture/grains-pulses-and-cereals/crop-production/general-agronomy/a-brief-guide-to-estimating-crop-yields" style="color:inherit">guide to estimating crop yields</a>. Your own crop may be heavier or lighter, so treat the result as a close estimate.</p>
+  <div class="viewsw"><button type="button" id="viewToggle"></button></div>
 </main>
 
 <script>
@@ -198,6 +239,7 @@ function calc(){
   const pct=(yld>0)?kgha/(yld*1000)*100:NaN;
   $('kg').textContent=isFinite(kgha)?Math.round(kgha).toLocaleString('en-AU'):'–';
   $('pct').textContent=isFinite(pct)?pct.toFixed(1):'–';
+  $('actsCheck').hidden=!(isFinite(pct)&&isFinite(kgha));
 
   // Target table: % loss in 0.5% steps → kg/ha and tray weight for this setup
   const ref=$('ref');
@@ -210,15 +252,154 @@ function calc(){
       const p=i*0.5, kg=yld*1000*p/100, g=kg/kgPerG;
       h+=`<tr${p===hitP?' class="hit"':''}><td>${p.toFixed(1)}%</td><td>${Math.round(kg)}</td><td>${g<1?g.toFixed(2):g.toFixed(1)}</td>`+(mode==='count'?`<td>${Math.round(g/tgw*1000)}</td>`:'')+'</tr>';
     }
-    ref.innerHTML=h;
+    ref.innerHTML=h; ref.closest('.tbl').classList.remove('empty');
   } else {
     ref.innerHTML='';
     $('refNote').textContent='Enter cut width, tray size and yield to see the table.';
+    ref.closest('.tbl').classList.add('empty');
   }
   showFav();
 }
 ['crop','cut','spread','tw','tl','yield','count'].forEach(id=>$(id).addEventListener('input',calc));
 setMode(mode);
+
+
+// ---------- View: paddock (default) or detailed ----------
+function setView(v){
+  const paddock=v!=='detailed';
+  document.body.classList.toggle('paddock',paddock);
+  $('viewToggle').textContent=paddock?'Switch to detailed mode':'Switch to paddock mode';
+  store.set('glc-view',paddock?'paddock':'detailed');
+}
+$('viewToggle').onclick=()=>{setView(document.body.classList.contains('paddock')?'detailed':'paddock');};
+setView(store.get('glc-view')||'paddock');
+
+// ---------- Copy result ----------
+const today=()=>new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
+function copyText(btn,text){
+  const done=()=>{const t=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('done');setTimeout(()=>{btn.textContent=t;btn.classList.remove('done');},1800);};
+  const fallback=()=>{
+    const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();
+    if(ok){done();return;}
+    // Last resort: show the text so it can be long-pressed and copied
+    let box=btn.parentElement.querySelector('.copybox');
+    if(!box){box=document.createElement('textarea');box.className='copybox';box.readOnly=true;box.rows=4;btn.insertAdjacentElement('afterend',box);}
+    box.value=text;box.focus();box.select();btn.textContent='Copy the text below';
+  };
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,fallback);} else fallback(); }
+  catch(e){fallback();}
+}
+function checkSummary(){
+  const S=setupInfo(), w=$('count').value;
+  const amt=mode==='weight'?`${w} g`:`${w} grains`;
+  const head=`${$('pct').textContent}% loss · ${$('kg').textContent} kg/ha`;
+  const detail=`${amt} in ${$('tw').value}×${$('tl').value} cm tray, ${S.cut} m cut`+(S.factor>1?`, ${S.spread} m spread`:'')+`, ${S.yld} t/ha.`;
+  return {title:`Grain loss – ${S.crop}, ${today()}`,head,detail,text:`Grain loss – ${S.crop}, ${today()}: ${$('pct').textContent}% (${$('kg').textContent} kg/ha). ${detail}`};
+}
+$('copyCheck').onclick=e=>copyText(e.currentTarget,checkSummary().text);
+
+// ---------- Photo + share ----------
+const photos={check:null};
+const summaries={check:()=>checkSummary()};
+function renderPhotoBar(key){
+  const el=$('photoCheck'); if(!el) return;
+  const ph=photos[key], copyBtn=$('copyCheck');
+  copyBtn.hidden=!!ph;                       // sharing includes the text, so Copy steps aside
+  el.innerHTML = ph
+    ? `<span class="pthumb"><img src="${ph.url}" alt="Attached photo"><button type="button" class="x" aria-label="Remove photo">×</button></span>
+       <button type="button" class="copy share">↗ Share</button>`
+    : `<label class="copy addp">📷 Photo<input type="file" accept="image/*" hidden></label>`;
+  if(ph){
+    el.querySelector('.x').onclick=()=>{URL.revokeObjectURL(ph.url);photos[key]=null;clearOut(key);renderPhotoBar(key);};
+    el.querySelector('.share').onclick=()=>sharePhoto(key);
+  } else {
+    el.querySelector('input').onchange=ev=>{
+      const f=ev.target.files&&ev.target.files[0]; if(!f) return;
+      photos[key]={url:URL.createObjectURL(f),ready:null}; renderPhotoBar(key); prepare(key);
+    };
+  }
+}
+function outEl(key){
+  const acts=$('photoCheck').parentElement;
+  let o=acts.nextElementSibling; if(!o||!o.classList.contains('pout')){o=document.createElement('div');o.className='pout';acts.after(o);} return o;
+}
+function clearOut(key){const o=$('photoCheck').parentElement.nextElementSibling; if(o&&o.classList.contains('pout')) o.remove();}
+// Build the share image as soon as a photo is picked, so tapping Share opens the share menu straight away
+async function prepare(key){
+  const ph=photos[key]; if(!ph) return null;
+  const sumText=summaries[key]().text;
+  if(ph.ready&&ph.ready.text===sumText) return ph.ready;
+  const r=await composeImage(key);
+  ph.ready={...r,file:new File([r.blob],`grain-loss-${new Date().toISOString().slice(0,10)}.jpg`,{type:'image/jpeg'})};
+  return ph.ready;
+}
+function loadImg(url){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url;});}
+function wrapLines(ctx,text,maxW){
+  const words=text.split(' '),lines=[];let line='';
+  for(const w of words){const t=line?line+' '+w:w; if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w;} else line=t;}
+  if(line)lines.push(line); return lines;
+}
+async function composeImage(key){
+  const sum=summaries[key](); const img=await loadImg(photos[key].url);
+  const W=1080, pad=56, ph=Math.min(Math.round(img.naturalHeight*W/img.naturalWidth),1440);
+  const c=document.createElement('canvas'), ctx=c.getContext('2d');
+  ctx.font='600 36px Barlow, system-ui, sans-serif';
+  const detail=wrapLines(ctx,sum.detail,W-pad*2);
+  const band=pad+40+20+88+24+detail.length*48+pad*0.6+36+pad*0.5;
+  c.width=W; c.height=ph+band;
+  // photo, centre-cropped if very tall
+  const sH=Math.min(img.naturalHeight, img.naturalWidth*ph/W), sY=(img.naturalHeight-sH)/2;
+  ctx.drawImage(img,0,sY,img.naturalWidth,sH,0,0,W,ph);
+  const g=ctx.createLinearGradient(0,ph,W,ph+band); g.addColorStop(0,'#367c2b'); g.addColorStop(1,'#24561c');
+  ctx.fillStyle=g; ctx.fillRect(0,ph,W,band);
+  let y=ph+pad+30;
+  ctx.fillStyle='rgba(255,255,255,.8)'; ctx.font='600 34px Barlow, system-ui, sans-serif'; ctx.fillText(sum.title.toUpperCase(),pad,y);
+  y+=20+80; ctx.fillStyle='#fff'; ctx.font='700 84px "Barlow Condensed", Barlow, system-ui, sans-serif'; ctx.fillText(sum.head,pad,y);
+  y+=24+36; ctx.font='500 36px Barlow, system-ui, sans-serif'; ctx.fillStyle='rgba(255,255,255,.92)';
+  detail.forEach(l=>{ctx.fillText(l,pad,y);y+=48;});
+  ctx.font='600 26px Barlow, system-ui, sans-serif'; ctx.fillStyle='rgba(255,255,255,.6)'; ctx.fillText('Grain Loss Calculator',pad,c.height-pad*0.6);
+  return new Promise(r=>c.toBlob(b=>r({blob:b,text:sum.text}),'image/jpeg',0.88));
+}
+// Inside the Claude viewer, files are saved through its downloads capability
+let dlP=null;
+const getDl=()=>dlP||(window.claude&&typeof window.claude.use==='function'?(dlP=window.claude.use('downloads').catch(()=>null)):Promise.resolve(null));
+addEventListener('load',()=>{getDl();});
+async function sharePhoto(key){
+  const ph=photos[key]; if(!ph) return;
+  const fresh=ph.ready&&ph.ready.text===summaries[key]().text;
+  try{
+    const r=fresh?ph.ready:await prepare(key);
+    if(navigator.canShare&&navigator.canShare({files:[r.file]})){
+      try{ await navigator.share({files:[r.file],text:r.text}); return; }
+      catch(e){ if(e&&e.name==='AbortError') return; }
+    }
+    // No share menu on this device: save the image instead
+    let embedded=false; try{embedded=window.self!==window.top;}catch(e){embedded=true;}
+    if(!embedded){
+      const a=document.createElement('a'); a.href=URL.createObjectURL(r.blob); a.download=r.file.name;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),10000);
+      return;
+    }
+    const dl=await getDl();
+    if(dl){
+      try{ await dl.save({filename:r.file.name,data:r.blob}); }
+      catch(e){ if(!e||e.code!=='declined') outEl(key).innerHTML='<p>Couldn\u2019t save the photo here. Try the installed phone app.</p>'; }
+      return;
+    }
+    outEl(key).innerHTML='<p>Photo sharing works in the installed phone app.</p>';
+  }catch(e){ outEl(key).innerHTML='<p>Couldn’t use that photo. Try another one.</p>'; }
+}
+renderPhotoBar('check');
+
+// ---------- Setup ----------
+function setupInfo(){
+  const c=CROPS[$('crop').value], tgw=c[1], cut=+$('cut').value, tw=+$('tw').value/100, tl=+$('tl').value/100,
+        spread=+$('spread').value, yld=+$('yield').value;
+  let factor=1; if(spread>0&&tl>0&&spread>tl) factor=spread/tl;
+  const area=tw*cut, ok=area>0&&yld>0;
+  return {crop:c[0],tgw,cut,tw,tl,spread,yld,factor,ok,kgPerG:ok?factor/area*10:NaN};
+}
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
 </body>
