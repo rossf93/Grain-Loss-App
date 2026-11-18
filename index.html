@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grain Loss Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#2f6b25">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Grain Loss">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root{--g:#367c2b;--gd:#24561c;--gl:#eaf3e7;--gm:#cfe3c9;--card:#fff;--ink:#16240f;--mute:#5d6b57;--line:#dfe8db}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f8f2;color:var(--ink);font:17px/1.4 Barlow,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  header{background:linear-gradient(160deg,var(--g) 0%,var(--gd) 100%);color:#fff;padding:calc(26px + env(safe-area-inset-top)) 20px 64px;position:relative;overflow:hidden}
+  header .in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+  header svg.ear{width:44px;height:44px;flex:none}
+  header .bg{position:absolute;right:-30px;bottom:-40px;width:220px;height:220px;opacity:.09;z-index:0}
+  h1{font:700 1.75rem/1.05 'Barlow Condensed',Barlow,sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:0}
+  header p{margin:4px 0 0;font-size:.9rem;opacity:.85}
+  main{max-width:520px;margin:-44px auto 0;padding:0 14px 40px;position:relative}
+  .box{background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px;box-shadow:0 1px 2px rgba(22,36,15,.06),0 4px 14px rgba(22,36,15,.05)}
+  label{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1rem;margin-bottom:10px}
+  .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--g);color:#fff;font-size:.85rem;font-weight:700;flex:none}
+  .unit{font-weight:500;color:var(--mute);font-size:.9rem}
+  input,select{width:100%;font:inherit;font-weight:600;color:var(--ink);background:var(--gl);border:2px solid transparent;border-radius:12px;padding:12px 14px;transition:border-color .15s,background .15s}
+  input::placeholder{color:#8a9a84;font-weight:400}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23367c2b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+  input:focus,select:focus{outline:none;border-color:var(--g);background-color:#fff}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  input[type=number]{-moz-appearance:textfield}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .two small{display:block;color:var(--mute);font-size:.78rem;margin-bottom:5px}
+  .hint{font-size:.82rem;color:var(--mute);margin:8px 0 0}
+  .fav{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  button{font:inherit;font-size:.9rem;font-weight:600;border:2px solid var(--gm);background:#fff;color:var(--gd);border-radius:99px;padding:6px 14px;cursor:pointer;transition:all .15s}
+  button:hover{border-color:var(--g)}
+  button.on{background:var(--g);border-color:var(--g);color:#fff}
+  .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--gl);border-radius:12px;padding:4px;margin-bottom:10px}
+  .seg button{border:0;border-radius:9px;padding:9px;background:transparent;color:var(--mute)}
+  .seg button.on{background:var(--g);color:#fff;box-shadow:0 2px 6px rgba(54,124,43,.35)}
+  .result{background:linear-gradient(160deg,var(--g),var(--gd));color:#fff;border-radius:18px;padding:20px 12px;display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;margin-top:16px;box-shadow:0 8px 24px rgba(36,86,28,.3)}
+  .result .div{background:rgba(255,255,255,.25);height:56px}
+  .result div{text-align:center}
+  .result b{display:block;font:700 2.9rem/1 'Barlow Condensed',Barlow,sans-serif;font-variant-numeric:tabular-nums}
+  .result span{font-size:.8rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+  table{width:100%;border-collapse:separate;border-spacing:0;font-variant-numeric:tabular-nums;font-size:.95rem}
+  th,td{padding:8px 10px;text-align:right}
+  th{color:#fff;background:var(--g);font-weight:600;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;position:sticky;top:0}
+  th:first-child{border-radius:10px 0 0 10px} th:last-child{border-radius:0 10px 10px 0}
+  th:first-child,td:first-child{text-align:left}
+  tr:nth-child(odd):not(:first-child) td{background:var(--gl)}
+  tr td:first-child{border-radius:8px 0 0 8px} tr td:last-child{border-radius:0 8px 8px 0}
+  tr.hit td{background:var(--gd)!important;color:#fff;font-weight:700}
+  .tbl label{margin-bottom:4px}
+  .note{font-size:.8rem;color:var(--mute);margin:16px 4px 0}
+  .note a{color:var(--g)}
+</style>
+</head>
+<body>
+<header><svg class="bg" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 46V18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><g fill="#fff"><ellipse cx="24" cy="9" rx="4" ry="7"/><ellipse cx="17.5" cy="17" rx="3.6" ry="6.4" transform="rotate(-32 17.5 17)"/><ellipse cx="30.5" cy="17" rx="3.6" ry="6.4" transform="rotate(32 30.5 17)"/><ellipse cx="17.5" cy="27" rx="3.6" ry="6.4" transform="rotate(-32 17.5 27)"/><ellipse cx="30.5" cy="27" rx="3.6" ry="6.4" transform="rotate(32 30.5 27)"/><ellipse cx="18" cy="36.5" rx="3.4" ry="6" transform="rotate(-32 18 36.5)"/><ellipse cx="30" cy="36.5" rx="3.4" ry="6" transform="rotate(32 30 36.5)"/></g></svg><div class="in"><svg class="ear" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 46V18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><g fill="#fff"><ellipse cx="24" cy="9" rx="4" ry="7"/><ellipse cx="17.5" cy="17" rx="3.6" ry="6.4" transform="rotate(-32 17.5 17)"/><ellipse cx="30.5" cy="17" rx="3.6" ry="6.4" transform="rotate(32 30.5 17)"/><ellipse cx="17.5" cy="27" rx="3.6" ry="6.4" transform="rotate(-32 17.5 27)"/><ellipse cx="30.5" cy="27" rx="3.6" ry="6.4" transform="rotate(32 30.5 27)"/><ellipse cx="18" cy="36.5" rx="3.4" ry="6" transform="rotate(-32 18 36.5)"/><ellipse cx="30" cy="36.5" rx="3.4" ry="6" transform="rotate(32 30 36.5)"/></g></svg><div><h1>Grain Loss Calculator</h1><p>Drop tray header loss check</p></div></div></header>
+<main>
+
+  <div class="box">
+    <label for="crop"><span class="n">1</span>Crop type</label>
+    <select id="crop"></select>
+    <p class="hint" id="tgwNote"></p>
+  </div>
+
+  <div class="box">
+    <label for="cut"><span class="n">2</span>Width of cut <span class="unit">(m)</span></label>
+    <input id="cut" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 12">
+  </div>
+
+  <div class="box">
+    <label for="spread"><span class="n">3</span>Spread width <span class="unit">(m)</span></label>
+    <input id="spread" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Leave blank if tray catches all discharge">
+    <p class="hint" id="spreadNote"></p>
+  </div>
+
+  <div class="box">
+    <label><span class="n">4</span>Tray size <span class="unit">(cm)</span></label>
+    <div class="two">
+      <div><small>Width (direction of travel)</small><input id="tw" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 30"></div>
+      <div><small>Length (across machine)</small><input id="tl" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 150"></div>
+    </div>
+    <div class="fav">
+      <button type="button" id="useFav" hidden></button>
+      <button type="button" id="saveFav">☆ Save as favourite</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <label for="yield"><span class="n">5</span>Crop yield <span class="unit">(t/ha)</span></label>
+    <input id="yield" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 3.5">
+  </div>
+
+  <div class="box">
+    <label for="count"><span class="n">6</span>Grain in tray <span class="unit" id="countUnit">(g)</span></label>
+    <div class="seg" role="group" aria-label="Measure by">
+      <button type="button" data-mode="weight" class="on">Weight (g)</button>
+      <button type="button" data-mode="count">Count</button>
+    </div>
+    <input id="count" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 4.5">
+    <p class="hint" id="modeNote"></p>
+  </div>
+
+  <div class="result">
+    <div><b id="pct">–</b><span>% loss</span></div>
+    <i class="div"></i>
+    <div><b id="kg">–</b><span>kg/ha</span></div>
+  </div>
+
+  <div class="box tbl" style="margin-top:16px">
+    <label>Target weights <span class="unit">for this setup</span></label>
+    <p class="hint" id="refNote" style="margin:0 0 8px"></p>
+    <table id="ref"></table>
+  </div>
+
+  <p class="note">Place the tray across the direction of travel. If spreaders are on, the spread is assumed to be even, so do two or three drops in different spots and average them. Grain weights are typical values from Agriculture Victoria's <a href="https://agriculture.vic.gov.au/crops-and-horticulture/grains-pulses-and-cereals/crop-production/general-agronomy/a-brief-guide-to-estimating-crop-yields" style="color:inherit">guide to estimating crop yields</a>. Your own crop may be heavier or lighter, so treat the result as a close estimate.</p>
+</main>
+
+<script>
+// [name, typical thousand grain weight in grams]
+// Source: Agriculture Victoria, "A brief guide to estimating crop yields", Table 1 (weight of 100 grains × 10)
+const CROPS=[["Wheat",34],["Barley",42],["Oats",40],["Triticale",40],["Canola",4],["Safflower",38],
+  ["Lentils",40,"30–50"],["Field peas",200],["Chickpeas (desi)",180],["Chickpeas (kabuli)",400],
+  ["Faba beans",500],["Lupins (narrow leaf)",160],["Lupins (broad leaf / albus)",300]];
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}};
+
+CROPS.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=c[0];$('crop').appendChild(o)});
+const savedCrop=CROPS.findIndex(c=>c[0]===store.get('glc-cropname')); if(savedCrop>=0) $('crop').value=savedCrop;
+const savedCut=store.get('glc-cut'); if(savedCut) $('cut').value=savedCut;
+const savedSpread=store.get('glc-spread'); if(savedSpread) $('spread').value=savedSpread;
+
+function fav(){try{return JSON.parse(store.get('glc-fav'))}catch(e){return null}}
+function showFav(){
+  const f=fav(), b=$('useFav');
+  if(f){b.hidden=false;b.textContent=`★ ${f.w} × ${f.l} cm`;
+    b.classList.toggle('on', +$('tw').value===f.w && +$('tl').value===f.l);}
+  else b.hidden=true;
+}
+$('useFav').onclick=()=>{const f=fav();if(f){$('tw').value=f.w;$('tl').value=f.l;calc();}};
+$('saveFav').onclick=()=>{
+  const w=+$('tw').value,l=+$('tl').value;
+  if(!(w>0&&l>0)){$('saveFav').textContent='Enter width & length first';setTimeout(()=>$('saveFav').textContent='☆ Save as favourite',1800);return;}
+  const ok=store.set('glc-fav',JSON.stringify({w,l}));
+  $('saveFav').textContent=ok?'Saved ✓':'Couldn’t save on this device';
+  setTimeout(()=>$('saveFav').textContent='☆ Save as favourite',1800);
+  showFav();
+};
+let mode=store.get('glc-mode')==='count'?'count':'weight';
+function setMode(m){
+  mode=m; store.set('glc-mode',m);
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  const inp=$('count');
+  if(m==='weight'){inp.inputMode='decimal';inp.step='0.1';inp.placeholder='e.g. 4.5';$('countUnit').textContent='(g)';}
+  else{inp.inputMode='numeric';inp.step='1';inp.placeholder='e.g. 120';$('countUnit').textContent='(count)';}
+  inp.value='';calc();
+}
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+
+const f0=fav(); if(f0){$('tw').value=f0.w;$('tl').value=f0.l;}
+
+function calc(){
+  const c=CROPS[$('crop').value], tgw=c[1];
+  $('tgwNote').textContent=`Typical grain weight: ${tgw} g per 1,000 grains`+(c[2]?` (range ${c[2]} g)`:'');
+  store.set('glc-cropname',c[0]);
+  store.set('glc-cut',$('cut').value);
+  store.set('glc-spread',$('spread').value);
+
+  const cut=+$('cut').value, tw=+$('tw').value/100, tl=+$('tl').value/100, spread=+$('spread').value,
+        yld=+$('yield').value, n=$('count').value===''?NaN:+$('count').value;
+  // If discharge is spread wider than the tray, the tray only catches tray length ÷ spread width of it
+  let factor=1;
+  if(spread>0 && tl>0 && spread>tl) factor=spread/tl;
+  $('spreadNote').textContent = !(spread>0) ? 'Blank = tray catches the full discharge.'
+    : !(tl>0) ? 'Enter tray length to use spread width.'
+    : factor>1 ? `Tray catches 1/${factor.toFixed(1)} of the spread, so the count is scaled ×${factor.toFixed(1)}.`
+    : 'Tray covers the full spread, so no scaling is needed.';
+  // Area harvested while the header passes over the tray = tray width (travel direction) × width of cut
+  const area=tw*cut;                       // m²
+  const caught = mode==='weight' ? n : n*tgw/1000;   // g of grain in the tray
+  const grams=caught*factor;               // g of grain lost across the full discharge
+  $('modeNote').textContent = mode==='weight'
+    ? 'Weighing doesn’t need the crop’s grain weight, so it’s the more accurate option.'
+    : `Converted to weight using ${tgw} g per 1,000 grains.`;
+  const kgha=(area>0)?grams/area*10:NaN;   // g/m² × 10 = kg/ha
+  const pct=(yld>0)?kgha/(yld*1000)*100:NaN;
+  $('kg').textContent=isFinite(kgha)?Math.round(kgha).toLocaleString('en-AU'):'–';
+  $('pct').textContent=isFinite(pct)?pct.toFixed(1):'–';
+
+  // Target weights table: tray weight in 0.5 g steps → kg/ha and % for this setup
+  const ref=$('ref');
+  if(area>0 && yld>0){
+    const kgPerG=factor/area*10;                    // kg/ha per gram in the tray
+    const g3=yld*1000*0.03/kgPerG;                  // grams that equal 3% loss
+    const rows=Math.min(60,Math.max(10,Math.ceil(g3/0.5)));
+    const hitG = isFinite(caught)&&caught>0 ? Math.min(rows,Math.max(1,Math.round(caught/0.5)))*0.5 : null;
+    $('refNote').textContent=`Grams in the tray and what they mean at ${yld} t/ha.`+(mode==='count'?' Grains shown at '+tgw+' g per 1,000.':'');
+    let h='<tr><th>Tray (g)</th>'+(mode==='count'?'<th>≈ Grains</th>':'')+'<th>kg/ha</th><th>% loss</th></tr>';
+    for(let i=1;i<=rows;i++){
+      const g=i*0.5, kg=g*kgPerG, p=kg/(yld*1000)*100;
+      h+=`<tr${g===hitG?' class="hit"':''}><td>${g.toFixed(1)}</td>`+(mode==='count'?`<td>${Math.round(g/tgw*1000)}</td>`:'')+`<td>${Math.round(kg)}</td><td>${p.toFixed(1)}%</td></tr>`;
+    }
+    ref.innerHTML=h;
+  } else {
+    ref.innerHTML='';
+    $('refNote').textContent='Enter cut width, tray size and yield to see the table.';
+  }
+  showFav();
+}
+['crop','cut','spread','tw','tl','yield','count'].forEach(id=>$(id).addEventListener('input',calc));
+setMode(mode);
+</script>
+<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body>
+</html>
