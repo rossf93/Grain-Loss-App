@@ -118,7 +118,7 @@
   </div>
 
   <div class="box tbl" style="margin-top:16px">
-    <label>Target weights <span class="unit">for this setup</span></label>
+    <label>Loss targets <span class="unit">for this setup</span></label>
     <p class="hint" id="refNote" style="margin:0 0 8px"></p>
     <table id="ref"></table>
   </div>
@@ -129,7 +129,9 @@
 <script>
 // [name, typical thousand grain weight in grams]
 // Source: Agriculture Victoria, "A brief guide to estimating crop yields", Table 1 (weight of 100 grains × 10)
-const CROPS=[["Wheat",34],["Barley",42],["Oats",40],["Triticale",40],["Canola",4],["Safflower",38],
+// [name, TGW g, TGW range]
+const CROPS=[["Wheat",34],["Barley",42],["Oats",40],["Triticale",40],
+  ["Canola",4],["Safflower",38],
   ["Lentils",40,"30–50"],["Field peas",200],["Chickpeas (desi)",180],["Chickpeas (kabuli)",400],
   ["Faba beans",500],["Lupins (narrow leaf)",160],["Lupins (broad leaf / albus)",300]];
 const $=id=>document.getElementById(id);
@@ -197,18 +199,16 @@ function calc(){
   $('kg').textContent=isFinite(kgha)?Math.round(kgha).toLocaleString('en-AU'):'–';
   $('pct').textContent=isFinite(pct)?pct.toFixed(1):'–';
 
-  // Target weights table: tray weight in 0.5 g steps → kg/ha and % for this setup
+  // Target table: % loss in 0.5% steps → kg/ha and tray weight for this setup
   const ref=$('ref');
   if(area>0 && yld>0){
     const kgPerG=factor/area*10;                    // kg/ha per gram in the tray
-    const g3=yld*1000*0.03/kgPerG;                  // grams that equal 3% loss
-    const rows=Math.min(60,Math.max(10,Math.ceil(g3/0.5)));
-    const hitG = isFinite(caught)&&caught>0 ? Math.min(rows,Math.max(1,Math.round(caught/0.5)))*0.5 : null;
-    $('refNote').textContent=`Grams in the tray and what they mean at ${yld} t/ha.`+(mode==='count'?' Grains shown at '+tgw+' g per 1,000.':'');
-    let h='<tr><th>Tray (g)</th>'+(mode==='count'?'<th>≈ Grains</th>':'')+'<th>kg/ha</th><th>% loss</th></tr>';
-    for(let i=1;i<=rows;i++){
-      const g=i*0.5, kg=g*kgPerG, p=kg/(yld*1000)*100;
-      h+=`<tr${g===hitG?' class="hit"':''}><td>${g.toFixed(1)}</td>`+(mode==='count'?`<td>${Math.round(g/tgw*1000)}</td>`:'')+`<td>${Math.round(kg)}</td><td>${p.toFixed(1)}%</td></tr>`;
+    const hitP = isFinite(pct)&&pct>0 ? Math.min(10,Math.max(1,Math.round(pct/0.5)))*0.5 : null;
+    $('refNote').textContent=`Tray weight for each loss level at ${yld} t/ha.`+(mode==='count'?' Grains shown at '+tgw+' g per 1,000.':'');
+    let h='<tr><th>% loss</th><th>kg/ha</th><th>Tray (g)</th>'+(mode==='count'?'<th>≈ Grains</th>':'')+'</tr>';
+    for(let i=1;i<=10;i++){
+      const p=i*0.5, kg=yld*1000*p/100, g=kg/kgPerG;
+      h+=`<tr${p===hitP?' class="hit"':''}><td>${p.toFixed(1)}%</td><td>${Math.round(kg)}</td><td>${g<1?g.toFixed(2):g.toFixed(1)}</td>`+(mode==='count'?`<td>${Math.round(g/tgw*1000)}</td>`:'')+'</tr>';
     }
     ref.innerHTML=h;
   } else {
