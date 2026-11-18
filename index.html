@@ -18,7 +18,7 @@
   :root{--g:#367c2b;--gd:#24561c;--gl:#eaf3e7;--gm:#cfe3c9;--card:#fff;--ink:#16240f;--mute:#5d6b57;--line:#dfe8db}
   *{box-sizing:border-box}
   body{margin:0;background:#f4f8f2;color:var(--ink);font:17px/1.4 Barlow,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-  header{background:linear-gradient(160deg,var(--g) 0%,var(--gd) 100%);color:#fff;padding:calc(26px + env(safe-area-inset-top)) 20px 64px;position:relative;overflow:hidden}
+  header{border-radius:0 0 28px 28px;background:linear-gradient(160deg,#3f8a32 0%,var(--g) 40%,var(--gd) 100%);color:#fff;padding:calc(26px + env(safe-area-inset-top)) 20px 64px;position:relative;overflow:hidden}
   header .in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:14px;position:relative;z-index:1}
   header svg.ear{width:44px;height:44px;flex:none}
   header .bg{position:absolute;right:-30px;bottom:-40px;width:220px;height:220px;opacity:.09;z-index:0}
@@ -65,7 +65,9 @@
   .copybox{grid-column:1/-1;margin-top:10px;width:100%;font:500 .85rem/1.4 Barlow,sans-serif;color:var(--ink);background:#fff;border-radius:10px;border:0;padding:10px;resize:none}
   .acts{grid-column:1/-1;display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px;flex-wrap:wrap}
   .acts[hidden],.copy[hidden]{display:none}
-  .acts .copy{margin-top:0}
+  .acts .copy{margin-top:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;line-height:1;box-sizing:border-box}
+  body.paddock .acts .copy{height:50px}
+  .acts label.copy{margin:0}
   .pbar{display:flex;gap:10px;align-items:center}
   .pbar .copy{margin-top:0;grid-column:auto}
   .addp{margin:0;cursor:pointer;font-size:.9rem;font-weight:600;border-radius:99px;display:inline-block}
@@ -76,28 +78,73 @@
   .pout p{font-size:.85rem;margin:6px 0 8px;opacity:.9}
   .pout img{max-width:100%;border-radius:12px;display:block;margin:0 auto}
   /* ---------- Paddock mode: bigger, higher contrast, less text ---------- */
-  body.paddock{font-size:20px;background:#fff;--mute:#2b3a25;--gl:#fff;--line:#16240f}
+  body.paddock{font-size:20px;background:#eef3ec;--mute:#3c4a36;--ink:#0d1a08}
   body.paddock .hint, body.paddock .note, body.paddock #tgwNote{display:none}
-  body.paddock .box{box-shadow:none;border:2px solid #16240f;padding:14px}
-  body.paddock label{font-size:1.1rem}
-  body.paddock .n{width:32px;height:32px;font-size:1rem}
-  body.paddock input, body.paddock select{font-size:1.4rem;font-weight:700;padding:16px;background-color:#fff;border:2.5px solid #16240f;color:#000}
-  body.paddock input:focus, body.paddock select:focus{border-color:var(--g);border-width:3.5px}
+  body.paddock .box{border:0;border-radius:20px;padding:16px 16px 18px;margin-bottom:12px;box-shadow:0 1px 0 rgba(13,26,8,.05),0 8px 24px -8px rgba(13,26,8,.18)}
+  body.paddock label{font-size:1.08rem;margin-bottom:12px;letter-spacing:.005em}
+  body.paddock .unit{color:#5b6b54;font-weight:600;font-size:.85rem;background:#eef3ec;border-radius:99px;padding:2px 9px}
+  body.paddock .n{width:30px;height:30px;font-size:.95rem;box-shadow:0 2px 6px rgba(54,124,43,.35)}
+  body.paddock input, body.paddock select{font-size:1.5rem;font-weight:700;padding:15px 16px;background-color:#f6f9f5;border:2px solid #c3d4bd;border-radius:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+  body.paddock input::placeholder{color:#a3b39c;font-weight:500}
+  body.paddock input:focus, body.paddock select:focus{background-color:#fff;border-color:var(--g);box-shadow:0 0 0 4px rgba(54,124,43,.18)}
   body.paddock .two{gap:12px}
-  body.paddock .seg{background:#fff;border:2.5px solid #16240f}
-  body.paddock .seg button{font-size:1.1rem;padding:12px;color:#16240f}
-  body.paddock .seg button.on{color:#fff}
-  body.paddock .result{background:#16240f;box-shadow:none}
-  body.paddock .result b{font-size:4.2rem}
-  body.paddock .result span{font-size:1rem;opacity:1}
-  body.paddock .copy{font-size:1.05rem;padding:12px 22px}
+  body.paddock .two small{font-weight:600;color:#5b6b54}
+  body.paddock .seg{background:#eef3ec;border:0;padding:5px;border-radius:14px}
+  body.paddock .seg button{font-size:1.05rem;padding:12px;color:#3c4a36;border-radius:10px}
+  body.paddock .seg button.on{color:#fff;background:var(--g);box-shadow:0 3px 10px rgba(54,124,43,.4)}
+  body.paddock .fav button{border:0;background:none;color:var(--g);padding:4px 2px;font-size:.95rem;text-decoration:underline;text-underline-offset:3px}
+  body.paddock .fav button.on{background:var(--g);color:#fff;text-decoration:none;padding:6px 14px}
+  body.paddock .result{background:radial-gradient(120% 140% at 0% 0%,#4a9a3a 0%,#2f6b25 45%,#1d4716 100%);border-radius:24px;padding:22px 14px 18px;box-shadow:0 14px 30px -10px rgba(29,71,22,.6),inset 0 1px 0 rgba(255,255,255,.18)}
+  body.paddock .result b{font-size:4.6rem;letter-spacing:-.01em;text-shadow:0 2px 8px rgba(0,0,0,.18)}
+  body.paddock .result span{font-size:.95rem;opacity:.85}
+  body.paddock .result .div{background:rgba(255,255,255,.3);height:70px}
+  body.paddock .copy{font-size:1.05rem;padding:12px 22px;background:rgba(255,255,255,.14);border:0;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+  body.paddock .copy.done{background:#fff;color:var(--gd)}
   body.paddock button{font-size:1rem}
   body.paddock table{font-size:1.15rem}
-  body.paddock th{font-size:.95rem}
-  body.paddock tr:nth-child(odd):not(:first-child) td{background:#eef1ec}
+  body.paddock th{font-size:.82rem;padding:10px}
+  body.paddock td{padding:10px}
+  body.paddock tr:nth-child(odd):not(:first-child) td{background:#f2f6f0}
+  body.paddock tr.hit td{background:var(--g)!important;box-shadow:0 3px 10px rgba(54,124,43,.35)}
   body.paddock .tbl.empty{display:none}
   .viewsw{text-align:center;margin:22px 0 4px}
   .viewsw button{background:none;border:0;color:var(--g);text-decoration:underline;text-underline-offset:3px;font-size:.95rem;padding:8px}
+  /* ---------- Sleek: slim header ---------- */
+  header{padding:calc(14px + env(safe-area-inset-top,0px)) 18px 42px}
+  header svg.ear{width:30px;height:30px}
+  header .bg{width:150px;height:150px;bottom:-30px;right:-20px}
+  h1{font-size:clamp(1.1rem,5.6vw,1.5rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+  header .in>div{min-width:0}
+  header p{display:none}
+  main{margin-top:-28px}
+  body.paddock .result b{font-size:3.9rem}
+  body.paddock .result{padding:16px 12px 14px}
+  body.paddock .result .div{height:58px}
+  /* ---------- Compact setup rows (paddock mode) ---------- */
+  body.paddock #setupWrap{background:#fff;border-radius:20px;padding:2px 16px 4px;margin-bottom:12px;box-shadow:0 1px 0 rgba(13,26,8,.05),0 8px 24px -8px rgba(13,26,8,.18)}
+  body.paddock #setupWrap .box{background:none;box-shadow:none;border-radius:0;margin:0;padding:12px 0;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;border-bottom:1.5px solid #e6ede3}
+  body.paddock #setupWrap #yieldBox{border-bottom:0}
+  body.paddock #setupWrap label{margin:0;font-size:1.02rem;gap:9px}
+  body.paddock #setupWrap .n{width:26px;height:26px;font-size:.85rem}
+  body.paddock #setupWrap input{width:118px;font-size:1.3rem;padding:10px 12px;text-align:center}
+  body.paddock #setupWrap select{width:168px;font-size:1.15rem;padding:10px 34px 10px 12px;background-position:right 10px center}
+  body.paddock #setupWrap .two{grid-column:1/-1;margin-top:10px;gap:10px}
+  body.paddock #setupWrap .two input{width:100%}
+  body.paddock #setupWrap .two small{font-size:.78rem;margin-bottom:4px}
+  body.paddock #setupWrap .fav{grid-column:1/-1;margin-top:6px}
+  body.paddock #setupWrap .hint{grid-column:1/-1}
+  /* ---------- Units inside the boxes ---------- */
+  .suf{position:relative;display:block}
+  .suf::after{content:attr(data-u);position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#6b7b64;font-weight:600;font-size:.85em;pointer-events:none;transition:opacity .15s}
+  .suf:has(input:placeholder-shown)::after{opacity:.5}
+  .suf input{padding-right:3.4em}
+  .suf[data-u="t/ha"] input,.suf[data-u="grains"] input{padding-right:4.2em}
+  body.paddock #setupWrap .suf input{width:140px;text-align:right;padding-right:2.3em}
+  body.paddock #setupWrap .suf[data-u="t/ha"] input{padding-right:3em}
+  body.paddock #setupWrap .two .suf input{padding-right:2.6em}
+  body.paddock #setupWrap .suf::after{right:12px;font-size:.95rem}
+  body.paddock #setupWrap .two .suf input{width:100%}
+  body.paddock .suf::after{font-size:1rem}
   .note{font-size:.8rem;color:var(--mute);margin:16px 4px 0}
   .note a{color:var(--g)}
 </style>
@@ -106,28 +153,29 @@
 <header><svg class="bg" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 46V18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><g fill="#fff"><ellipse cx="24" cy="9" rx="4" ry="7"/><ellipse cx="17.5" cy="17" rx="3.6" ry="6.4" transform="rotate(-32 17.5 17)"/><ellipse cx="30.5" cy="17" rx="3.6" ry="6.4" transform="rotate(32 30.5 17)"/><ellipse cx="17.5" cy="27" rx="3.6" ry="6.4" transform="rotate(-32 17.5 27)"/><ellipse cx="30.5" cy="27" rx="3.6" ry="6.4" transform="rotate(32 30.5 27)"/><ellipse cx="18" cy="36.5" rx="3.4" ry="6" transform="rotate(-32 18 36.5)"/><ellipse cx="30" cy="36.5" rx="3.4" ry="6" transform="rotate(32 30 36.5)"/></g></svg><div class="in"><svg class="ear" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 46V18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><g fill="#fff"><ellipse cx="24" cy="9" rx="4" ry="7"/><ellipse cx="17.5" cy="17" rx="3.6" ry="6.4" transform="rotate(-32 17.5 17)"/><ellipse cx="30.5" cy="17" rx="3.6" ry="6.4" transform="rotate(32 30.5 17)"/><ellipse cx="17.5" cy="27" rx="3.6" ry="6.4" transform="rotate(-32 17.5 27)"/><ellipse cx="30.5" cy="27" rx="3.6" ry="6.4" transform="rotate(32 30.5 27)"/><ellipse cx="18" cy="36.5" rx="3.4" ry="6" transform="rotate(-32 18 36.5)"/><ellipse cx="30" cy="36.5" rx="3.4" ry="6" transform="rotate(32 30 36.5)"/></g></svg><div><h1>Grain Loss Calculator</h1><p>Drop tray header loss check</p></div></div></header>
 <main>
 
+  <div id="setupWrap">
   <div class="box">
-    <label for="crop"><span class="n">1</span>Crop type</label>
+    <label for="crop">Crop type</label>
     <select id="crop"></select>
     <p class="hint" id="tgwNote"></p>
   </div>
 
   <div class="box">
-    <label for="cut"><span class="n">2</span>Width of cut <span class="unit">(m)</span></label>
-    <input id="cut" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 12">
+    <label for="cut">Width of cut</label>
+    <span class="suf" data-u="m"><input id="cut" type="number" inputmode="decimal" min="0" step="0.1" placeholder="12"></span>
   </div>
 
   <div class="box">
-    <label for="spread"><span class="n">3</span>Spread width <span class="unit">(m)</span></label>
-    <input id="spread" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Leave blank if tray catches all discharge">
+    <label for="spread">Spread width</label>
+    <span class="suf" data-u="m"><input id="spread" type="number" inputmode="decimal" min="0" step="0.1" placeholder="opt."></span>
     <p class="hint" id="spreadNote"></p>
   </div>
 
   <div class="box">
-    <label><span class="n">4</span>Tray size <span class="unit">(cm)</span></label>
+    <label>Tray size</label>
     <div class="two">
-      <div><small>Width (direction of travel)</small><input id="tw" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 30"></div>
-      <div><small>Length (across machine)</small><input id="tl" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 150"></div>
+      <div><small>Width (travel)</small><span class="suf" data-u="cm"><input id="tw" type="number" inputmode="decimal" min="0" step="1" placeholder="30"></span></div>
+      <div><small>Length (across)</small><span class="suf" data-u="cm"><input id="tl" type="number" inputmode="decimal" min="0" step="1" placeholder="150"></span></div>
     </div>
     <div class="fav">
       <button type="button" id="useFav" hidden></button>
@@ -135,18 +183,19 @@
     </div>
   </div>
 
-  <div class="box">
-    <label for="yield"><span class="n">5</span>Crop yield <span class="unit">(t/ha)</span></label>
-    <input id="yield" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 3.5">
+  <div class="box" id="yieldBox">
+    <label for="yield">Crop yield</label>
+    <span class="suf" data-u="t/ha"><input id="yield" type="number" inputmode="decimal" min="0" step="0.1" placeholder="3.5"></span>
+  </div>
   </div>
 
-  <div class="box">
-    <label for="count"><span class="n">6</span>Grain in tray <span class="unit" id="countUnit">(g)</span></label>
+  <div class="box" id="countBox">
+    <label for="count">Grain in tray</label>
     <div class="seg" role="group" aria-label="Measure by">
       <button type="button" data-mode="weight" class="on">Weight (g)</button>
       <button type="button" data-mode="count">Count</button>
     </div>
-    <input id="count" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 4.5">
+    <span class="suf" data-u="g" id="countWrap"><input id="count" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 4.5"></span>
     <p class="hint" id="modeNote"></p>
   </div>
 
@@ -182,6 +231,7 @@ CROPS.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textC
 const savedCrop=CROPS.findIndex(c=>c[0]===store.get('glc-cropname')); if(savedCrop>=0) $('crop').value=savedCrop;
 const savedCut=store.get('glc-cut'); if(savedCut) $('cut').value=savedCut;
 const savedSpread=store.get('glc-spread'); if(savedSpread) $('spread').value=savedSpread;
+['tw','tl','yield'].forEach(id=>{const v=store.get('glc-'+id); if(v) $(id).value=v;});
 
 function fav(){try{return JSON.parse(store.get('glc-fav'))}catch(e){return null}}
 function showFav(){
@@ -204,13 +254,13 @@ function setMode(m){
   mode=m; store.set('glc-mode',m);
   document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
   const inp=$('count');
-  if(m==='weight'){inp.inputMode='decimal';inp.step='0.1';inp.placeholder='e.g. 4.5';$('countUnit').textContent='(g)';}
-  else{inp.inputMode='numeric';inp.step='1';inp.placeholder='e.g. 120';$('countUnit').textContent='(count)';}
+  if(m==='weight'){inp.inputMode='decimal';inp.step='0.1';inp.placeholder='e.g. 4.5';$('countWrap').dataset.u='g';}
+  else{inp.inputMode='numeric';inp.step='1';inp.placeholder='e.g. 120';$('countWrap').dataset.u='grains';}
   inp.value='';calc();
 }
 document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 
-const f0=fav(); if(f0){$('tw').value=f0.w;$('tl').value=f0.l;}
+const f0=fav(); if(f0&&!store.get('glc-tw')){$('tw').value=f0.w;$('tl').value=f0.l;}
 
 function calc(){
   const c=CROPS[$('crop').value], tgw=c[1];
@@ -218,6 +268,7 @@ function calc(){
   store.set('glc-cropname',c[0]);
   store.set('glc-cut',$('cut').value);
   store.set('glc-spread',$('spread').value);
+  ['tw','tl','yield'].forEach(id=>store.set('glc-'+id,$(id).value));
 
   const cut=+$('cut').value, tw=+$('tw').value/100, tl=+$('tl').value/100, spread=+$('spread').value,
         yld=+$('yield').value, n=$('count').value===''?NaN:+$('count').value;
@@ -240,6 +291,7 @@ function calc(){
   $('kg').textContent=isFinite(kgha)?Math.round(kgha).toLocaleString('en-AU'):'–';
   $('pct').textContent=isFinite(pct)?pct.toFixed(1):'–';
   $('actsCheck').hidden=!(isFinite(pct)&&isFinite(kgha));
+  document.querySelector('.result').classList.toggle('empty',$('actsCheck').hidden);
 
   // Target table: % loss in 0.5% steps → kg/ha and tray weight for this setup
   const ref=$('ref');
@@ -262,6 +314,7 @@ function calc(){
 }
 ['crop','cut','spread','tw','tl','yield','count'].forEach(id=>$(id).addEventListener('input',calc));
 setMode(mode);
+
 
 
 // ---------- View: paddock (default) or detailed ----------
