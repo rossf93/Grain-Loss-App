@@ -145,6 +145,37 @@
   body.paddock #setupWrap .suf::after{right:12px;font-size:.95rem}
   body.paddock #setupWrap .two .suf input{width:100%}
   body.paddock .suf::after{font-size:1rem}
+  /* ---------- Tabs + history ---------- */
+  .tabs{display:grid;grid-template-columns:1fr 1fr;background:#fff;border-radius:16px;padding:5px;margin-bottom:12px;box-shadow:0 1px 0 rgba(13,26,8,.05),0 8px 24px -8px rgba(13,26,8,.18)}
+  .tabs button{border:0;border-radius:12px;padding:11px;background:transparent;color:var(--mute);font-weight:700;font-size:1rem}
+  .tabs button.on{background:var(--g);color:#fff;box-shadow:0 3px 10px rgba(54,124,43,.35)}
+  .tabs .cnt{display:inline-block;min-width:1.5em;margin-left:7px;padding:1px 7px;border-radius:99px;font-size:.78em;background:var(--gl);color:var(--gd)}
+  .tabs .cnt:empty{display:none}
+  .tabs button.on .cnt{background:rgba(255,255,255,.25);color:#fff}
+  section[hidden]{display:none}
+  #machine{font-weight:700}
+  body.paddock #setupWrap #machine{width:168px;font-size:1.15rem;text-align:left}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .chips:empty{display:none}
+  .chips button{background:#fff;border:0;box-shadow:inset 0 0 0 1.5px var(--gm);color:var(--gd);padding:8px 16px}
+  .chips button.on{background:var(--g);color:#fff;box-shadow:none}
+  .hstat{font-size:.9rem;color:var(--mute);margin:0 4px 10px}
+  .hstat:empty{display:none}
+  .hitem{background:#fff;border-radius:18px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 0 rgba(13,26,8,.05),0 8px 24px -10px rgba(13,26,8,.18);display:grid;grid-template-columns:1fr auto;gap:2px 10px}
+  .hitem .hv{font:700 2rem/1 'Barlow Condensed',Barlow,sans-serif;color:var(--gd);font-variant-numeric:tabular-nums}
+  .hitem .hv small{font:600 .95rem Barlow,sans-serif;color:var(--mute);margin-left:8px}
+  .hitem .hd{font-size:.85rem;color:var(--mute);text-align:right;align-self:center}
+  .hitem .hm{grid-column:1/-1;font-weight:700;margin-top:6px}
+  .hitem .hs{grid-column:1/-1;font-size:.85rem;color:var(--mute)}
+  .hitem .hx{grid-column:1/-1;justify-self:end;margin-top:6px;border:0;background:none;color:var(--mute);font-size:.85rem;padding:4px 2px;text-decoration:underline;text-underline-offset:3px}
+  .hitem .hx.sure{background:#b3301f;color:#fff;text-decoration:none;padding:6px 14px;border-radius:99px}
+  .hempty{text-align:center;color:var(--mute);background:#fff;border-radius:18px;padding:28px 20px;line-height:1.45}
+  #saveCheck.done{background:#fff;color:var(--gd)}
+  body.paddock .acts .copy{padding:0 16px}
+  body.paddock .tabs{border:0}
+  body.paddock .tabs button{font-size:1.05rem;padding:13px}
+  body.paddock .hitem .hv{font-size:2.4rem}
+  body.paddock .hitem .hm{font-size:1.05rem}
   .note{font-size:.8rem;color:var(--mute);margin:16px 4px 0}
   .note a{color:var(--g)}
 </style>
@@ -152,8 +183,19 @@
 <body>
 <header><svg class="bg" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 46V18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><g fill="#fff"><ellipse cx="24" cy="9" rx="4" ry="7"/><ellipse cx="17.5" cy="17" rx="3.6" ry="6.4" transform="rotate(-32 17.5 17)"/><ellipse cx="30.5" cy="17" rx="3.6" ry="6.4" transform="rotate(32 30.5 17)"/><ellipse cx="17.5" cy="27" rx="3.6" ry="6.4" transform="rotate(-32 17.5 27)"/><ellipse cx="30.5" cy="27" rx="3.6" ry="6.4" transform="rotate(32 30.5 27)"/><ellipse cx="18" cy="36.5" rx="3.4" ry="6" transform="rotate(-32 18 36.5)"/><ellipse cx="30" cy="36.5" rx="3.4" ry="6" transform="rotate(32 30 36.5)"/></g></svg><div class="in"><svg class="ear" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 46V18" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><g fill="#fff"><ellipse cx="24" cy="9" rx="4" ry="7"/><ellipse cx="17.5" cy="17" rx="3.6" ry="6.4" transform="rotate(-32 17.5 17)"/><ellipse cx="30.5" cy="17" rx="3.6" ry="6.4" transform="rotate(32 30.5 17)"/><ellipse cx="17.5" cy="27" rx="3.6" ry="6.4" transform="rotate(-32 17.5 27)"/><ellipse cx="30.5" cy="27" rx="3.6" ry="6.4" transform="rotate(32 30.5 27)"/><ellipse cx="18" cy="36.5" rx="3.4" ry="6" transform="rotate(-32 18 36.5)"/><ellipse cx="30" cy="36.5" rx="3.4" ry="6" transform="rotate(32 30 36.5)"/></g></svg><div><h1>Grain Loss Calculator</h1><p>Drop tray header loss check</p></div></div></header>
 <main>
+  <div class="tabs" role="tablist">
+    <button type="button" class="on" data-tab="check">Loss check</button>
+    <button type="button" data-tab="hist">History<span class="cnt" id="histCount"></span></button>
+  </div>
 
+  <section id="tab-check">
   <div id="setupWrap">
+  <div class="box">
+    <label for="machine">Machine</label>
+    <input id="machine" type="text" list="machineList" autocomplete="off" enterkeyhint="done" maxlength="30" placeholder="e.g. S780">
+    <datalist id="machineList"></datalist>
+  </div>
+
   <div class="box">
     <label for="crop">Crop type</label>
     <select id="crop"></select>
@@ -203,7 +245,7 @@
     <div><b id="pct">–</b><span>% loss</span></div>
     <i class="div"></i>
     <div><b id="kg">–</b><span>kg/ha</span></div>
-    <div class="acts" id="actsCheck" hidden><button type="button" class="copy" id="copyCheck">⧉ Copy</button><div class="pbar" id="photoCheck"></div></div>
+    <div class="acts" id="actsCheck" hidden><button type="button" class="copy" id="saveCheck">＋ Save</button><button type="button" class="copy" id="copyCheck">⧉ Copy</button><div class="pbar" id="photoCheck"></div></div>
   </div>
 
   <div class="box tbl" style="margin-top:16px">
@@ -213,6 +255,14 @@
   </div>
 
   <p class="note">Place the tray across the direction of travel. If spreaders are on, the spread is assumed to be even, so do two or three drops in different spots and average them. Grain weights are typical values from Agriculture Victoria's <a href="https://agriculture.vic.gov.au/crops-and-horticulture/grains-pulses-and-cereals/crop-production/general-agronomy/a-brief-guide-to-estimating-crop-yields" style="color:inherit">guide to estimating crop yields</a>. Your own crop may be heavier or lighter, so treat the result as a close estimate.</p>
+  </section>
+
+  <section id="tab-hist" hidden>
+    <div class="chips" id="histFilter"></div>
+    <div class="hstat" id="histStat"></div>
+    <div id="histList"></div>
+  </section>
+
   <div class="viewsw"><button type="button" id="viewToggle"></button></div>
 </main>
 
@@ -317,6 +367,68 @@ setMode(mode);
 
 
 
+
+// ---------- Machine name ----------
+const savedMachine=store.get('glc-machine'); if(savedMachine) $('machine').value=savedMachine;
+$('machine').addEventListener('input',()=>store.set('glc-machine',$('machine').value.trim()));
+function refreshMachineList(){
+  const names=[...new Set(loadHist().map(h=>h.machine).filter(Boolean))];
+  $('machineList').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+}
+function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// ---------- History ----------
+function loadHist(){try{const h=JSON.parse(store.get('glc-history'));return Array.isArray(h)?h:[];}catch(e){return [];}}
+function saveHist(h){return store.set('glc-history',JSON.stringify(h.slice(0,500)));}
+let histFilter='All';
+$('saveCheck').onclick=e=>{
+  const S=setupInfo(), btn=e.currentTarget;
+  const entry={t:Date.now(),machine:$('machine').value.trim(),crop:S.crop,pct:$('pct').textContent,kg:$('kg').textContent,
+    mode, amount:$('count').value, tw:$('tw').value, tl:$('tl').value, cut:S.cut, spread:S.factor>1?S.spread:0, yld:S.yld};
+  const h=loadHist(), last=h[0];
+  if(last && entry.t-last.t<4000 && last.pct===entry.pct && last.amount===entry.amount && last.machine===entry.machine){ flash(btn,'✓ Saved'); return; }
+  h.unshift(entry);
+  if(!saveHist(h)){ flash(btn,'Couldn’t save'); return; }
+  flash(btn,'✓ Saved'); refreshMachineList(); updateCount();
+};
+function flash(btn,txt){const t=btn.dataset.label||btn.textContent;btn.dataset.label=t;btn.textContent=txt;btn.classList.add('done');setTimeout(()=>{btn.textContent=t;btn.classList.remove('done');},1600);}
+function updateCount(){const n=loadHist().length;$('histCount').textContent=n?n:'';}
+function fmtWhen(t){const d=new Date(t);return d.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+', '+d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});}
+function renderHist(){
+  const all=loadHist(), machines=[...new Set(all.map(h=>h.machine||'Unnamed'))];
+  if(!machines.includes(histFilter)) histFilter='All';
+  $('histFilter').innerHTML = machines.length>1 ? ['All',...machines].map(m=>`<button type="button" class="${m===histFilter?'on':''}" data-m="${esc(m)}">${esc(m)}</button>`).join('') : '';
+  $('histFilter').querySelectorAll('button').forEach(b=>b.onclick=()=>{histFilter=b.dataset.m;renderHist();});
+  const list=all.map((h,i)=>({...h,i})).filter(h=>histFilter==='All'||(h.machine||'Unnamed')===histFilter);
+  if(!list.length){
+    $('histStat').textContent='';
+    $('histList').innerHTML='<div class="hempty">No saved checks yet.<br>Tap <b>＋ Save</b> on a result to keep it here.</div>'; return;
+  }
+  const nums=list.map(h=>parseFloat(h.pct)).filter(isFinite);
+  $('histStat').textContent=nums.length>1?`${list.length} checks · average ${(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1)}% loss`:'';
+  $('histList').innerHTML=list.map(h=>{
+    const amt=h.mode==='count'?`${esc(h.amount)} grains`:`${esc(h.amount)} g`;
+    const setup=`${amt} in ${esc(h.tw)}×${esc(h.tl)} cm tray · ${esc(h.cut)} m cut`+(+h.spread>0?` · ${esc(h.spread)} m spread`:'')+` · ${esc(h.yld)} t/ha`;
+    return `<div class="hitem"><div class="hv">${esc(h.pct)}%<small>${esc(h.kg)} kg/ha</small></div><div class="hd">${fmtWhen(h.t)}</div>
+      <div class="hm">${esc(h.machine||'Unnamed machine')} · ${esc(h.crop)}</div><div class="hs">${setup}</div>
+      <button type="button" class="hx" data-i="${h.i}">Delete</button></div>`;
+  }).join('');
+  $('histList').querySelectorAll('.hx').forEach(b=>b.onclick=()=>{
+    if(!b.classList.contains('sure')){b.classList.add('sure');b.textContent='Tap again to delete';setTimeout(()=>{if(b.isConnected){b.classList.remove('sure');b.textContent='Delete';}},3000);return;}
+    const h=loadHist(); h.splice(+b.dataset.i,1); saveHist(h); updateCount(); refreshMachineList(); renderHist();
+  });
+}
+
+// ---------- Tabs ----------
+function showTab(t){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $('tab-check').hidden=t!=='check'; $('tab-hist').hidden=t!=='hist';
+  if(t==='hist') renderHist();
+  scrollTo(0,0);
+}
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+updateCount(); refreshMachineList();
+
 // ---------- View: paddock (default) or detailed ----------
 function setView(v){
   const paddock=v!=='detailed';
@@ -348,7 +460,8 @@ function checkSummary(){
   const amt=mode==='weight'?`${w} g`:`${w} grains`;
   const head=`${$('pct').textContent}% loss · ${$('kg').textContent} kg/ha`;
   const detail=`${amt} in ${$('tw').value}×${$('tl').value} cm tray, ${S.cut} m cut`+(S.factor>1?`, ${S.spread} m spread`:'')+`, ${S.yld} t/ha.`;
-  return {title:`Grain loss – ${S.crop}, ${today()}`,head,detail,text:`Grain loss – ${S.crop}, ${today()}: ${$('pct').textContent}% (${$('kg').textContent} kg/ha). ${detail}`};
+  const who=($('machine').value.trim()?$('machine').value.trim()+' · ':'')+S.crop;
+  return {title:`Grain loss – ${who}, ${today()}`,head,detail,text:`Grain loss – ${who}, ${today()}: ${$('pct').textContent}% (${$('kg').textContent} kg/ha). ${detail}`};
 }
 $('copyCheck').onclick=e=>copyText(e.currentTarget,checkSummary().text);
 
